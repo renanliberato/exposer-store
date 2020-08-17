@@ -2,7 +2,7 @@
 
 namespace RenanLiberato\ExposerStore\Store;
 
-use RenanLiberato\Exposer\Persistors\PersistorInterface;
+use RenanLiberato\ExposerStore\Persistors\PersistorInterface;
 
 abstract class Store
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace RenanLiberato\Exposer\Persistors;
+namespace RenanLiberato\ExposerStore\Persistors;
 
 use RenanLiberato\ExposerStore\Store\Store;
 
