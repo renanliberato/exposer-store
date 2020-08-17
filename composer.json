@@ -9,8 +9,10 @@
             "email": "renan.libsantana@gmail.com"
         }
     ],
-    "version": "0.1.1",
-    "require": {},
+    "version": "0.2.0",
+    "require": {
+        "firebase/php-jwt": "^5.2"
+    },
     "autoload": {
         "psr-4": {
             "RenanLiberato\\ExposerStore\\": "src/"

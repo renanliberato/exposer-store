@@ -2,10 +2,18 @@
 
 namespace RenanLiberato\ExposerStore\Store;
 
+use RenanLiberato\Exposer\Persistors\PersistorInterface;
+
 abstract class Store
 {
+    /**
+     * @var array
+     */
     public $initialState;
 
+    /**
+     * @var callable
+     */
     private $mainReducer;
 
     /**
@@ -13,10 +21,21 @@ abstract class Store
      */
     private $state;
 
+    /**
+     * @var array
+     */
     private $middlewares;
 
-    private $persistFunction;
+    /**
+     * @var PersistorInterface
+     */
+    private $persistor;
 
+    /**
+     * @param array $state
+     * @param array $reducers
+     * @param array $middlewares
+     */
     public function __construct($state, $reducers, $middlewares)
     {
         $this->initialState = $state;
@@ -24,11 +43,13 @@ abstract class Store
         $this->mainReducer = $this->combineReducers($reducers);
         $this->middlewares = $middlewares;
         $this->middlewares = $this->applyMiddlewares();
-        $this->persistFunction = function ($state) {
-            return $state;
-        };
 
         $this->action(['type' => 'INITIALIZE']);
+    }
+
+    public function setPersistor(PersistorInterface $persistor)
+    {
+        $this->persistor = $persistor;
     }
 
     private function combineReducers($reducers = [])
@@ -51,7 +72,7 @@ abstract class Store
 
     public function setState($state)
     {
-        $this->state = $state;
+        $this->state = array_merge($this->state, $state);
     }
 
     public function action($action)
@@ -60,14 +81,15 @@ abstract class Store
         $this->state = ($this->mainReducer)($action);
     }
 
-    public abstract function getPersistedState();
-
-    public function setPersistFunction($persistFunction)
+    public function getPersistedState()
     {
-        $this->persistFunction = $persistFunction;
+        $this->setState($this->persistor->getPersistedState());
     }
 
-    public abstract function persistState();
+    public function persistState()
+    {
+        $this->persistor->persistState($this->getState());
+    }
 
     public function applyMiddlewares()
     {
