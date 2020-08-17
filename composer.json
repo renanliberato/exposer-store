@@ -1,0 +1,22 @@
+{
+    "name": "renanliberato/exposer-store",
+    "description": "PHP package to manage app state through a redux-like API",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Renan Liberato",
+            "email": "renan.libsantana@gmail.com"
+        }
+    ],
+    "version": "0.1.0",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "RenanLiberato\\ExposerStore\\": "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    }
+}
