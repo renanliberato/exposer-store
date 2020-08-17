@@ -102,20 +102,15 @@ abstract class Store
     {
         $defaultNext = new DefaultMiddleware($this);
 
-        $i = 0;
         if ($this->middlewares == null || count($this->middlewares) == 0) {
-            return [$defaultNext];
+            $this->middlewares = [$defaultNext];
         }
 
         if (count($this->middlewares) == 1) {
             $theMiddleware = new $this->middlewares[0]($this);
             $theMiddleware->setNext($defaultNext);
-
-            return [$theMiddleware];
         }
 
-        $middlewaresLength = count($this->middlewares);
-        
         $this->middlewares = array_map(function ($middleware) {
             return (new $middleware($this));
         }, $this->middlewares);
