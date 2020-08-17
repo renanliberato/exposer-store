@@ -3,6 +3,7 @@
 namespace RenanLiberato\ExposerStore\Store;
 
 use RenanLiberato\ExposerStore\Persistors\PersistorInterface;
+use RenanLiberato\ExposerStore\Middlewares\AbstractMiddleware;
 
 abstract class Store
 {
@@ -42,7 +43,8 @@ abstract class Store
         $this->state = $state;
         $this->mainReducer = $this->combineReducers($reducers);
         $this->middlewares = $middlewares;
-        $this->middlewares = $this->applyMiddlewares();
+        
+        $this->applyMiddlewares();
 
         $this->action(['type' => 'INITIALIZE']);
     }
@@ -98,9 +100,7 @@ abstract class Store
 
     public function applyMiddlewares()
     {
-        $defaultNext = function ($action) {
-            return $action;
-        };
+        $defaultNext = new DefaultMiddleware($this);
 
         $i = 0;
         if ($this->middlewares == null || count($this->middlewares) == 0) {
@@ -111,7 +111,7 @@ abstract class Store
             $theMiddleware = new $this->middlewares[0]($this);
             $theMiddleware->setNext($defaultNext);
 
-            return $theMiddleware;
+            return [$theMiddleware];
         }
 
         $middlewaresLength = count($this->middlewares);
@@ -131,5 +131,13 @@ abstract class Store
 
             $i--;
         }
+    }
+}
+
+class DefaultMiddleware extends AbstractMiddleware
+{
+    public function process($action)
+    {
+        return $action;
     }
 }
