@@ -9,7 +9,7 @@
             "email": "renan.libsantana@gmail.com"
         }
     ],
-    "version": "0.2.1",
+    "version": "0.3.0",
     "require": {
         "firebase/php-jwt": "^5.2"
     },

@@ -36,7 +36,7 @@ abstract class Store
      * @param array $reducers
      * @param array $middlewares
      */
-    public function __construct($state, $reducers, $middlewares)
+    public function __construct($state, $reducers, $middlewares = [])
     {
         $this->initialState = $state;
         $this->state = $state;
@@ -55,10 +55,15 @@ abstract class Store
     private function combineReducers($reducers = [])
     {
         return function ($action) use ($reducers) {
-            return array_reduce($reducers, function ($state, $reducer) use ($action) {
-                $newState = $reducer($state, $action);
-                return $newState;
-            }, $this->getState());
+            $state = $this->getState();
+
+            foreach ($state as $key => $value) {
+                if (isset($reducers[$key])) {
+                    $state[$key] = $reducers[$key]($value, $action);
+                }
+            }
+
+            return $state;
         };
     }
 
@@ -77,7 +82,7 @@ abstract class Store
 
     public function action($action)
     {
-        ($this->middlewares[0])($action);
+        $this->middlewares[0]->process($action);
         $this->state = ($this->mainReducer)($action);
     }
 
@@ -103,9 +108,10 @@ abstract class Store
         }
 
         if (count($this->middlewares) == 1) {
-            return [
-                (new $this->middlewares[0]($this))($defaultNext)
-            ];
+            $theMiddleware = new $this->middlewares[0]($this);
+            $theMiddleware->setNext($defaultNext);
+
+            return $theMiddleware;
         }
 
         $middlewaresLength = count($this->middlewares);
@@ -116,17 +122,14 @@ abstract class Store
         
         $i = count($this->middlewares) - 1;
         
-        $middlewaresWithNext = [];
         while ($i >= 0) {
             if ($i == count($this->middlewares) - 1) {
-                $middlewaresWithNext[$i] = $this->middlewares[$i]($defaultNext);
+                $this->middlewares[$i]->setNext($defaultNext);
             } else {
-                $middlewaresWithNext[$i] = $this->middlewares[$i]($middlewaresWithNext[$i + 1]);
+                $this->middlewares[$i]->setNext($this->middlewares[$i + 1]);
             }
 
             $i--;
         }
-
-        return $middlewaresWithNext;
     }
 }
