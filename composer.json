@@ -14,9 +14,6 @@
     "autoload": {
         "psr-4": {
             "RenanLiberato\\ExposerStore\\": "src/"
-        },
-        "files": [
-            "src/functions.php"
-        ]
+        }
     }
 }
