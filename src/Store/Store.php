@@ -84,8 +84,7 @@ abstract class Store
 
     public function action($action)
     {
-        $this->middlewares[0]->process($action);
-        $this->state = ($this->mainReducer)($action);
+        $this->state = ($this->mainReducer)($this->middlewares[0]->process($action));
     }
 
     public function getPersistedState()
